@@ -16,35 +16,29 @@ titulaciones = dbGetQuery(conn,"SELECT DISTINCT(qr.nombre) FROM qr_titulacion qr
 # Componenetes educativos
 compEducativo = dbGetQuery(conn,"SELECT DISTINCT(qr.nombre) FROM qr_componente_edu qr")
 
-b =0
-for(componente in compEducativo$nombre){
-  consultaCompAcademico = sprintf("SELECT t.nombre 'Titulacion',qr.nombre 'COMPONENTE', ac.descripcion 'ActividadesClase', pa.nombre 'Periodo' FROM ACTIVIDAD ac, DISTRI_TIEMPO_CONTENIDO dtc, PLAN_ACAD_COMPONENTE pac, PERIODO_ACADEMICO pa, qr_componente_edu qr, TITULACION t WHERE dtc.dtc_id = ac.dtc_id AND dtc.pac_id = pac.pac_id AND pac.sga_periodo_id = pa.guid AND qr.codigo = pac.sga_codigo_com AND qr.id_titulacion = t.titulacion_id AND qr.nombre = '%s' AND pa.nombre = '%s'",componente, periodos$nombre[1])
+b=0
+materia = compEducativo$nombre[115]
+
+for(periodo in periodos$nombre){
+  # script de la consulta a la base de datos
+  consultaCompAcademico = sprintf("SELECT t.nombre 'Titulacion', qr.nombre 'COMPONENTE', ac.descripcion 'ActividadesClase', pa.nombre 'Periodo' FROM ACTIVIDAD ac, DISTRI_TIEMPO_CONTENIDO dtc, PLAN_ACAD_COMPONENTE pac, PERIODO_ACADEMICO pa, qr_componente_edu qr, TITULACION t WHERE dtc.dtc_id = ac.dtc_id AND dtc.pac_id = pac.pac_id AND pac.sga_periodo_id = pa.guid AND qr.codigo = pac.sga_codigo_com AND qr.id_titulacion = t.titulacion_id AND qr.nombre = '%s' AND pa.nombre = '%s'",materia, periodo)
+  # Consulta a la base de datos
   actividadClase = dbGetQuery(conn, consultaCompAcademico)
   if(length(actividadClase$ActividadesClase) > 0){
-    #archivo = sprintf("//home//%s_%s.txt", componente, gsub("/","",periodo))
-    #write(actividadClase$ActividadesClase, archivo)
+    archivo = sprintf("//home//ferch01991//Documentos//txtPlanes//%s_%s_%s.txt", actividadClase$Titulacion[1], materia, gsub("/","",periodo))
+    write(actividadClase$ActividadesClase, archivo)
     b =b+1
-    a = sprintf("%s - %s - %s", componente, periodos$nombre[1], b)
-    print(a)
+    print(b)
+    #a = sprintf("%s - %s - %s", componente, periodo, b)
+    #print(a)
+    #break()
   }
 }
 
-
-for(componente in compEducativo$nombre){
-  for(periodo in periodos$nombre){
-    # script de la consulta a la base de datos
-    consultaCompAcademico = sprintf("SELECT qr.nombre 'COMPONENTE', ac.descripcion 'ActividadesClase', pa.nombre 'Periodo' FROM ACTIVIDAD ac, DISTRI_TIEMPO_CONTENIDO dtc, PLAN_ACAD_COMPONENTE pac, PERIODO_ACADEMICO pa, qr_componente_edu qr, TITULACION t WHERE dtc.dtc_id = ac.dtc_id AND dtc.pac_id = pac.pac_id AND pac.sga_periodo_id = pa.guid AND qr.codigo = pac.sga_codigo_com AND qr.id_titulacion = t.titulacion_id AND qr.nombre = '%s' AND pa.nombre = '%s'",componente, periodo)
-    # Consulta a la base de datos
-    actividadClase = dbGetQuery(conn, consultaCompAcademico)
-    if(length(actividadClase$ActividadesClase) > 0){
-      #archivo = sprintf("//home//%s_%s.txt", componente, gsub("/","",periodo))
-      #write(actividadClase$ActividadesClase, archivo)
-      b =b+1
-      a = sprintf("%s - %s - %s", componente, periodo, b)
-      print(a)
-      break()
-    }
-  }
-}
 
 on.exit(dbDisconnect(conn))
+
+# planes que no tienen actividades 
+# CONVERGENCIA DE PANTALLAS: DIVERSIDAD DE VISIONES - SEMINARIO INTERNACIONAL ALIMENTOS IBEROAMERICANOS - INGENIERIA DE PROYECTOS Y GESTIÓN DEL CONOCIMIENTO - INGENIERIA DE PROYECTOS Y GESTIÓN DEL CONOCIMIENTO
+# CURSO DE INDUCCIÓN UNIVERSITARIA - TECNICAS ESTADISTICAS PARA LA TOMA DE DECISIONES - RUSO I - PORTUGUES - CONJUNTO CORAL - CONSERVACIÓN DE LA NATURALEZA Y DIVERSIDAD ANIMAL
+# TRABAJO DE FIN DE CARRERA GP 4.1 - RETÓRICA, TEORÍA DE LA ARGUMENTACIÓN Y ORATORIA
