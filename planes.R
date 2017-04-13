@@ -9,7 +9,7 @@ db = "planesdocentes"
 db_host = "localhost"
 db_port = 3306
 db_user = "root"
-db_pass = "root"
+db_pass = ""
 
 # Conexion a la base de datos
 conn = dbConnect(MySQL(), user=db_user, password=db_pass, dbname=db, host=db_host)
@@ -41,6 +41,13 @@ actividadesPlanes = tm_map(actividadesPlanes, tolower)
 #removemos los stopwords
 actividadesPlanes = tm_map(actividadesPlanes, removeWords, stopwords("spanish"))
 #actividadesPlanes = tm_map(actividadesPlanes, removeWords, stopwords("spanish2"))
+#remove de caracteres 
+actividadesPlanes = tm_map(actividadesPlanes, removeWords, c("i", "ii"))
+#stemming reduce una palabra a su raiz
+actividadesPlanes = tm_map(actividadesPlanes, stemDocument, language="spanish")
+# remove de espacios dobles
+actividadesPlanes = tm_map(actividadesPlanes, stripWhitespace)
+
 
 prueba = actividadesPlanes
 dictEC = dictionary('es_EC')
