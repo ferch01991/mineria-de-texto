@@ -3,6 +3,7 @@ library(RMySQL)
 library(NLP)
 library(tm)
 library(hunspell)
+library(SnowballC)
 
 #db = "pruebaPlanes"
 db = "planesdocentes"
@@ -44,14 +45,9 @@ actividadesPlanes = tm_map(actividadesPlanes, removeWords, stopwords("spanish"))
 #remove de caracteres 
 actividadesPlanes = tm_map(actividadesPlanes, removeWords, c("i", "ii"))
 #stemming reduce una palabra a su raiz
-actividadesPlanes = tm_map(actividadesPlanes, stemDocument, language="spanish")
+docs = tm_map(actividadesPlanes, stemDocument, language="spanish")
 # remove de espacios dobles
 actividadesPlanes = tm_map(actividadesPlanes, stripWhitespace)
-
-
-prueba = actividadesPlanes
-dictEC = dictionary('es_EC')
-prueba = hunspell_stem(prueba, dict = 'es_EC')
 
 
 
