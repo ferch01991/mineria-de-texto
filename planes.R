@@ -6,15 +6,31 @@ library(hunspell)
 library(SnowballC)
 
 #db = "pruebaPlanes"
-db = "planesdocentes"
+db = "planesdocentesdb"
 db_host = "localhost"
 db_port = 3306
 db_user = "root"
 db_pass = ""
 
+conn = dbConnect(MySQL(), user=db_user, password=db_pass, dbname=db, host=db_host)
+queryTabla1 = "SELECT DISTINCT sga_codigo_com, nombre
+               FROM pac_actividades LEFT JOIN qr_componente_edu ON sga_codigo_com = codigo
+               WHERE nom_componente IS NULL;"
+consulta = dbGetQuery(conn, queryTabla1)
+
+for(i in 1:length(consulta$sga_codigo_com)){
+  actDatos = sprintf("UPDATE pac_actividades SET nom_componente = '%s' WHERE sga_codigo_com = '%s'", consulta$nombre[i], consulta$sga_codigo_com[i])
+  print(actDatos)
+  dbGetQuery(conn,actDatos)
+}
+
+
 # Conexion a la base de datos
 conn = dbConnect(MySQL(), user=db_user, password=db_pass, dbname=db, host=db_host)
-queryPlanes = "SELECT pac.pac_id 'Codigo del Plan', act.descripcion 'Actividades', pac.sga_codigo_com 'Codigo del componente' FROM PLAN_ACAD_COMPONENTE pac, DISTRI_TIEMPO_CONTENIDO dtc, ACTIVIDAD act WHERE pac.pac_id = dtc.pac_id AND dtc.dtc_id = act.dtc_id;"
+queryPlanes = "SELECT qr.nombre, pac.sga_codigo_com, act.descripcion, pac.pac_id
+               FROM distri_tiempo_contenido dtc, actividad act, plan_acad_componente pac LEFT JOIN qr_componente_edu qr ON pac.sga_componente_id = qr.guid
+               WHERE pac.pac_id = dtc.pac_id
+               AND dtc.dtc_id = act.dtc_id;"
 consulta = dbGetQuery(conn, queryPlanes)
 
 
