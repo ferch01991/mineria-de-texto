@@ -13,28 +13,36 @@ db_user = "root"
 db_pass = ""
 
 conn = dbConnect(MySQL(), user=db_user, password=db_pass, dbname=db, host=db_host)
-queryTabla1 = "SELECT DISTINCT sga_codigo_com, nombre
-               FROM pac_actividades LEFT JOIN qr_componente_edu ON sga_codigo_com = codigo
-               WHERE nom_componente IS NULL;"
+queryTabla1 = "SELECT pac_id, nom_componente, act_descripcion, periodo_academico FROM pac_actividades"
 consulta = dbGetQuery(conn, queryTabla1)
+on.exit(dbDisconnect(conn))
 
-for(i in 1:length(consulta$sga_codigo_com)){
-  actDatos = sprintf("UPDATE pac_actividades SET nom_componente = '%s' WHERE sga_codigo_com = '%s'", consulta$nombre[i], consulta$sga_codigo_com[i])
-  print(actDatos)
-  dbGetQuery(conn,actDatos)
+
+dir.create("C:\\Users\\FernandoH\\Documents\\planesDocentes")
+
+planesId = consulta$pac_id
+planesId = unique(planesId)
+i=0
+for(planes in planesId){
+  for(idP in consulta$pac_id){
+    if(planes == idP){
+      #a = sprintf("%s - %s - %s", consulta$pac_id,consulta$act_descripcion, consulta$periodo_academico)
+      i = i+1
+      print(i)
+    }
+    print("salto")
+  }
 }
 
 
-# Conexion a la base de datos
-conn = dbConnect(MySQL(), user=db_user, password=db_pass, dbname=db, host=db_host)
-queryPlanes = "SELECT qr.nombre, pac.sga_codigo_com, act.descripcion, pac.pac_id
-               FROM distri_tiempo_contenido dtc, actividad act, plan_acad_componente pac LEFT JOIN qr_componente_edu qr ON pac.sga_componente_id = qr.guid
-               WHERE pac.pac_id = dtc.pac_id
-               AND dtc.dtc_id = act.dtc_id;"
-consulta = dbGetQuery(conn, queryPlanes)
+
+archivo = sprintf("C:\\Users\\FernandoH\\Documents\\planesDocentes\\%s_%s.txt", componente, gsub("/","",periodo))
+#archivo = sprintf("//home//ferch01991//Documentos//PlanesDocentes//%s_%s.txt", componente, gsub("/","",periodo))
+write(actividadClase$ActividadesClase, archivo)
 
 
-on.exit(dbDisconnect(conn))
+
+
 
 actividadesPlanes = consulta$Actividades
 
