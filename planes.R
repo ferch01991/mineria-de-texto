@@ -22,17 +22,25 @@ dir.create("C:\\Users\\FernandoH\\Documents\\planesDocentes")
 
 planesId = consulta$pac_id
 planesId = unique(planesId)
-i=0
-for(planes in planesId){
-  for(idP in consulta$pac_id){
-    if(planes == idP){
-      #a = sprintf("%s - %s - %s", consulta$pac_id,consulta$act_descripcion, consulta$periodo_academico)
-      i = i+1
-      print(i)
-    }
-    print("salto")
+i =1
+planesId = unique(consulta$pac_id)
+
+i = 1
+
+for(i in 1:length(planesId)){
+  for(j in 1:length(consulta$pac_id)){
+   if(planesId[i] == consulta$pac_id[j]){
+     a = sprintf("%s - %s - %s - %s", consulta$pac_id[j], consulta$nom_componente[j], consulta$act_descripcion[j], consulta$periodo_academico[j])
+     print(a)
+   }else{
+     
+   } 
   }
+  print("salto")
 }
+
+for(i in 2)
+
 
 
 
