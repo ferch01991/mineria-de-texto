@@ -13,33 +13,41 @@ db_user = "root"
 db_pass = ""
 
 conn = dbConnect(MySQL(), user=db_user, password=db_pass, dbname=db, host=db_host)
-queryTabla1 = "SELECT pac_id, nom_componente, act_descripcion, periodo_academico FROM pac_actividades"
-consulta = dbGetQuery(conn, queryTabla1)
+queryIdPlanes = "SELECT Distinct pac_id FROM pac_actividades"
+consulta = dbGetQuery(conn, queryIdPlanes)
+for(i in 1:length(consulta$pac_id)){
+  queryActividades = sprintf("SELECT pac_id, nom_componente, act_descripcion, periodo_academico FROM pac_actividades WHERE pac_id = %s", consulta$pac_id[i])
+  actividades = dbGetQuery(conn, queryActividades)
+  archivo = sprintf("C:\\Users\\FernandoH\\Documents\\planesDocentes2\\%s_%s_%s.txt", actividades$pac_id[1], actividades$nom_componente[1], gsub("/","",actividades$periodo_academico[1]))
+  print(archivo)
+  #write(actividades$act_descripcion, archivo)
+}
+
 on.exit(dbDisconnect(conn))
 
 
-dir.create("C:\\Users\\FernandoH\\Documents\\planesDocentes")
+
+
+
+dir.create("C:\\Users\\FernandoH\\Documents\\planesDocentes2")
 
 planesId = consulta$pac_id
 planesId = unique(planesId)
-i =1
-planesId = unique(consulta$pac_id)
 
-i = 1
-
-for(i in 1:length(planesId)){
-  for(j in 1:length(consulta$pac_id)){
+actividades = ""
+for(i in 1:3){
+  for(j in 1:100){
    if(planesId[i] == consulta$pac_id[j]){
-     a = sprintf("%s - %s - %s - %s", consulta$pac_id[j], consulta$nom_componente[j], consulta$act_descripcion[j], consulta$periodo_academico[j])
-     print(a)
-   }else{
+     aux = consulta$act_descripcion[j]
+     actividades = paste(actividades, aux, planesId[i], j, "-")
      
-   } 
+   }
   }
-  print("salto")
+  print(actividades)
+  actividades = ""
 }
 
-for(i in 2)
+
 
 
 
