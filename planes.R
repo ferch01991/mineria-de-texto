@@ -4,6 +4,8 @@ library(NLP)
 library(tm)
 library(hunspell)
 library(SnowballC)
+library(slam)
+library(RWeka)
 
 #db = "pruebaPlanes"
 db = "planesdocentesdb"
@@ -13,14 +15,44 @@ db_user = "root"
 db_pass = ""
 
 conn = dbConnect(MySQL(), user=db_user, password=db_pass, dbname=db, host=db_host)
+planDocente = "SELECT * FROM pac_actividades"
+consulta = dbGetQuery(conn, planDocente)
+
+setwd("C:\\Users\\FernandoH\\Documents\\corpusPlanes")
+consulta[1, ]
+periodos =  unique(consulta$periodo_academico)
+titulaciones =  unique(consulta$titulacion)
+pac = unique(consulta[,2])
+# filtrar datos de un periodo
+periodo1 = subset(consulta, (periodo_academico == periodos[1]))
+
+p = 0
+for(directorio in list.files()){
+  p = p+1
+  datos = subset(consulta, (periodo_academico == periodos[p]))
+  for(titulacion in unique(datos$titulacion)){
+    carpeta = paste(directorio, titulacion, sep = "/")
+    dir.create(carpeta, showWarnings = TRUE)
+  } 
+  datos = 0
+}
+
+datos = subset(consulta, (periodo_academico == periodos[8]))
+for(titulacion in unique(datos$titulacion)){
+  carpeta = paste(list.files()[5], titulacion, sep = "/")
+  dir.create(carpeta, showWarnings = TRUE)
+}
+
+
+conn = dbConnect(MySQL(), user=db_user, password=db_pass, dbname=db, host=db_host)
 queryIdPlanes = "SELECT Distinct pac_id FROM pac_actividades"
 consulta = dbGetQuery(conn, queryIdPlanes)
 for(i in 1:length(consulta$pac_id)){
   queryActividades = sprintf("SELECT pac_id, nom_componente, act_descripcion, periodo_academico FROM pac_actividades WHERE pac_id = %s", consulta$pac_id[i])
   actividades = dbGetQuery(conn, queryActividades)
-  archivo = sprintf("C:\\Users\\FernandoH\\Documents\\planesDocentes2\\%s_%s_%s.txt", actividades$pac_id[1], actividades$nom_componente[1], gsub("/","",actividades$periodo_academico[1]))
-  print(archivo)
-  #write(actividades$act_descripcion, archivo)
+  archivo = sprintf("C:\\Users\\FernandoH\\Documents\\planesDocentes2\\%s_%s_%s.txt", actividades$pac_id[1], gsub(":","",actividades$nom_componente[1]) , gsub("/","",actividades$periodo_academico[1]))
+  #print(archivo)
+  write(actividades$act_descripcion, archivo)
 }
 
 on.exit(dbDisconnect(conn))
