@@ -2,7 +2,7 @@ library(DBI)
 library(RMySQL)
 library(NLP)
 library(tm)
-library(hunspell)
+#library(hunspell)
 library(SnowballC)
 library(slam)
 library(RWeka)
@@ -28,9 +28,11 @@ periodo1 = subset(consulta, (periodo_academico == periodos[1]))
 
 
 ################ crear diretorios ########################################
-datos = subset(consulta, (periodo_academico == periodos[8]))
+i = 1
+periodo = periodos[i]
+datos = subset(consulta, (periodo_academico == periodo))
 for(titulacion in unique(datos$titulacion)){
-  carpeta = paste(list.files()[5], titulacion, sep = "/")
+  carpeta = paste(gsub("/", "", periodos[i]), titulacion, sep = "/")
   dir.create(carpeta, showWarnings = TRUE)
 }
 
@@ -38,15 +40,16 @@ for(titulacion in unique(datos$titulacion)){
 i = 5
 periodo = list.files()[i]
 for(p in 1:length(list.files(periodo))){
-  datos = subset(consulta, (periodo_academico==periodos[i]) & (titulacion==list.files(periodo)[p]))
+  datos = subset(consulta, (periodo_academico==periodos[8]) & (is.na(titulacion)))
   for(id in unique(datos$pac_id)){
     actividades = subset(datos, (pac_id==id))
     archivo = sprintf("%s\\%s\\%s_%s.txt", periodo, list.files(periodo)[p], actividades$pac_id[1], actividades$nom_componente[1])
     write(actividades$act_descripcion, archivo)
   }
 }
+##Datos que no pertenezcan a una titulacion
+datos = subset(consulta, (periodo_academico==periodos[2]) & (is.na(titulacion)))
 ##########################################################
-
 
 for(titulacion in unique(datos$titulacion)){
   datos2 = subset(consulta )
