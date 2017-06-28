@@ -26,21 +26,32 @@ pac = unique(consulta[,2])
 # filtrar datos de un periodo
 periodo1 = subset(consulta, (periodo_academico == periodos[1]))
 
-p = 0
-for(directorio in list.files()){
-  p = p+1
-  datos = subset(consulta, (periodo_academico == periodos[p]))
-  for(titulacion in unique(datos$titulacion)){
-    carpeta = paste(directorio, titulacion, sep = "/")
-    dir.create(carpeta, showWarnings = TRUE)
-  } 
-  datos = 0
-}
 
+################ crear diretorios ########################################
 datos = subset(consulta, (periodo_academico == periodos[8]))
 for(titulacion in unique(datos$titulacion)){
   carpeta = paste(list.files()[5], titulacion, sep = "/")
   dir.create(carpeta, showWarnings = TRUE)
+}
+
+### ####################Organiar datos####################################
+i = 5
+periodo = list.files()[i]
+for(p in 1:length(list.files(periodo))){
+  datos = subset(consulta, (periodo_academico==periodos[i]) & (titulacion==list.files(periodo)[p]))
+  for(id in unique(datos$pac_id)){
+    actividades = subset(datos, (pac_id==id))
+    archivo = sprintf("%s\\%s\\%s_%s.txt", periodo, list.files(periodo)[p], actividades$pac_id[1], actividades$nom_componente[1])
+    write(actividades$act_descripcion, archivo)
+  }
+}
+##########################################################
+
+
+for(titulacion in unique(datos$titulacion)){
+  datos2 = subset(consulta )
+  archivo = sprintf("%s\\%s\\%s_%s.txt", gsub("/","",periodos[1]), titulacion )
+  write(actividades$act_descripcion, archivo)
 }
 
 
